@@ -1,6 +1,6 @@
 <!--
 Projeto: Condenser PRO POC
-Versão: 1.0
+Versão: 1.5
 Data: 30/09/2025
 Arquivo: /home/mesh/condenser-pro-poc/src/App.vue
 -->
@@ -8,7 +8,7 @@ Arquivo: /home/mesh/condenser-pro-poc/src/App.vue
 import { ref, computed } from 'vue';
 import axios from 'axios';
 
-// --- [1] APONTA PARA O NOVO SERVIÇO E ENDPOINT ---
+// --- Configuração da API ---
 const API_BASE_URL = 'http://localhost:8000';
 const CONDENSER_ENDPOINT = '/api/v1/condenser/run';
 
@@ -17,10 +17,9 @@ const originalPrompt = ref('' );
 const condensedPrompt = ref('');
 const isLoading = ref(false);
 const error = ref(null);
-// --- [2] NOVO ESTADO PARA O MODO DE CONDENSAÇÃO ---
 const condensationMode = ref('summary'); // 'summary' ou 'llm_optimization'
 
-// --- Propriedades Computadas ---
+// --- [CORREÇÃO] Propriedades Computadas para as métricas ---
 const originalLength = computed(() => originalPrompt.value.length);
 const condensedLength = computed(() => condensedPrompt.value.length);
 const reductionPercentage = computed(() => {
@@ -43,7 +42,6 @@ async function handleCondense() {
   condensedPrompt.value = '';
 
   try {
-    // --- [3] ENVIA O MODO SELECIONADO NO CORPO DA REQUISIÇÃO ---
     const requestBody = {
       text: originalPrompt.value,
       mode: condensationMode.value
@@ -55,7 +53,7 @@ async function handleCondense() {
     if (err.response) {
       error.value = `Erro do servidor: ${err.response.data.detail || err.response.statusText}`;
     } else if (err.request) {
-      error.value = "Não foi possível conectar ao servidor. O backend PRO está rodando?";
+      error.value = "Não foi possível conectar ao servidor. O backend está rodando?";
     } else {
       error.value = "Ocorreu um erro inesperado.";
     }
@@ -79,7 +77,6 @@ async function copyToClipboard() {
   <div class="condenser-container">
     <header class="app-header">
       <img src="/logo_meshwave.svg" alt="MeshWave Logo" class="logo" />
-      <!-- [4] TÍTULO ATUALIZADO -->
       <h1>Agente Condensador PRO</h1>
     </header>
     <main>
@@ -88,7 +85,6 @@ async function copyToClipboard() {
         <textarea id="original-prompt" v-model="originalPrompt" rows="10" placeholder="Cole aqui o seu prompt, artigo, ou qualquer texto longo..."></textarea>
       </div>
 
-      <!-- [5] NOVA SEÇÃO PARA SELEÇÃO DE MODO -->
       <div class="mode-selector">
         <label>Modo de Condensação:</label>
         <div class="radio-group">
@@ -153,40 +149,11 @@ button { border: none; padding: 10px 18px; border-radius: 5px; cursor: pointer; 
 .metric-card.water p { color: #28a745; }
 .metric-card span { font-size: 0.8rem; color: #888; }
 .feedback.error { margin-top: 1rem; padding: 1rem; border-radius: 4px; background-color: #682a2a; color: #ffc0c0; text-align: center; }
-
-/* --- [6] ESTILOS PARA O NOVO SELETOR DE MODO --- */
-.mode-selector {
-  margin: 1.5rem 0;
-  padding: 1rem;
-  background-color: #333;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.mode-selector > label {
-  font-weight: 600;
-  color: #ccc;
-  margin: 0;
-}
-.radio-group {
-  display: flex;
-  gap: 1rem;
-}
-.radio-group label {
-  cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-  font-weight: normal; /* Sobrescreve o negrito do label geral */
-  margin: 0; /* Remove margens extras */
-}
-.radio-group input[type="radio"] {
-  display: none;
-}
-.radio-group input[type="radio"]:checked + label {
-  background-color: #007acc;
-  color: white;
-}
+.mode-selector { margin: 1.5rem 0; padding: 1rem; background-color: #333; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; }
+.mode-selector > label { font-weight: 600; color: #ccc; margin: 0; }
+.radio-group { display: flex; gap: 1rem; }
+.radio-group label { cursor: pointer; padding: 8px 12px; border-radius: 4px; transition: background-color 0.2s; font-weight: normal; margin: 0; }
+.radio-group input[type="radio"] { display: none; }
+.radio-group input[type="radio"]:checked + label { background-color: #007acc; color: white; }
 </style>
 
