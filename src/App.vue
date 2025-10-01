@@ -1,7 +1,7 @@
 <!--
 Projeto: Condenser PRO POC
-Versão: 1.5
-Data: 30/09/2025
+Versão: 1.8
+Data: 01/10/2025
 Arquivo: /home/mesh/condenser-pro-poc/src/App.vue
 -->
 <script setup>
@@ -13,13 +13,13 @@ const API_BASE_URL = 'http://localhost:8000';
 const CONDENSER_ENDPOINT = '/api/v1/condenser/run';
 
 // --- Estado da Interface ---
-const originalPrompt = ref('' );
+const originalPrompt = ref(''  );
 const condensedPrompt = ref('');
 const isLoading = ref(false);
 const error = ref(null);
 const condensationMode = ref('summary'); // 'summary' ou 'llm_optimization'
 
-// --- [CORREÇÃO] Propriedades Computadas para as métricas ---
+// --- Propriedades Computadas para as métricas ---
 const originalLength = computed(() => originalPrompt.value.length);
 const condensedLength = computed(() => condensedPrompt.value.length);
 const reductionPercentage = computed(() => {
@@ -71,6 +71,11 @@ async function copyToClipboard() {
     alert('Não foi possível copiar o texto.');
   }
 }
+
+// --- [ÚNICA ADIÇÃO] FUNÇÃO PARA LIMPAR O TEXTO DE ENTRADA ---
+function clearInput() {
+  originalPrompt.value = '';
+}
 </script>
 
 <template>
@@ -80,9 +85,13 @@ async function copyToClipboard() {
       <h1>Agente Condensador PRO</h1>
     </header>
     <main>
+      <!-- [ÚNICA ADIÇÃO] WRAPPER E BOTÃO DE LIMPAR -->
       <div class="input-section">
         <label for="original-prompt">Insira o texto a ser otimizado:</label>
-        <textarea id="original-prompt" v-model="originalPrompt" rows="10" placeholder="Cole aqui o seu prompt, artigo, ou qualquer texto longo..."></textarea>
+        <div class="textarea-wrapper">
+          <textarea id="original-prompt" v-model="originalPrompt" rows="10" placeholder="Cole aqui o seu prompt, artigo, ou qualquer texto longo..."></textarea>
+          <button v-if="originalPrompt" @click="clearInput" class="clear-btn" title="Limpar Texto">❌</button>
+        </div>
       </div>
 
       <div class="mode-selector">
@@ -155,5 +164,21 @@ button { border: none; padding: 10px 18px; border-radius: 5px; cursor: pointer; 
 .radio-group label { cursor: pointer; padding: 8px 12px; border-radius: 4px; transition: background-color 0.2s; font-weight: normal; margin: 0; }
 .radio-group input[type="radio"] { display: none; }
 .radio-group input[type="radio"]:checked + label { background-color: #007acc; color: white; }
+
+/* --- [ÚNICA ADIÇÃO] ESTILO PARA O BOTÃO DE LIMPAR --- */
+.clear-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #444;
+  color: #eee;
+  border: 1px solid #555;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+}
+.clear-btn:hover {
+  background: #682a2a;
+  color: white;
+}
 </style>
 
